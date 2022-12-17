@@ -1,9 +1,16 @@
 from django.urls import path
 
-from Web_Application.web.views import Checkout, Store, Cart
+from Web_Application.web.views import checkout, store, cart, update_item, details_item, login_view, register_view, \
+    logout_view, details_profile
 
 urlpatterns = (
-    path('', Store.as_view(), name='store'),
-    path('checkout/', Checkout.as_view(), name='checkout'),
-    path('cart/', Cart.as_view(), name='cart'),
+    path('', store, name='store'),
+    path('checkout/', checkout, name='checkout'),
+    path('cart/', cart, name='cart'),
+    path('update_item/', update_item, name='update item'),
+    path('item/details/<int:product_id>', details_item, name='details item'),
+    path('login/', login_view, name='login view'),
+    path('register/', register_view, name='register view'),
+    path('logout/', logout_view, name='logout view'),
+    path('profile/details/', details_profile, name='details profile')
 )

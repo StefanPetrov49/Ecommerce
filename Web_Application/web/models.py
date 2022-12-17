@@ -14,8 +14,7 @@ class Customer(models.Model):
         null=False,
         blank=False,
     )
-    email = models.CharField(
-        max_length=200,
+    email = models.EmailField(
         unique=True,
         null=False,
         blank=False,
@@ -31,12 +30,20 @@ class Product(models.Model):
         null=False,
         blank=False,
     )
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=7, decimal_places=2)
 
     image = models.ImageField(
         null=True,
         blank=True,
     )
+
+    @property
+    def imageUrl(self):
+        try:
+            url = self.image.url
+        except:
+            url = ''
+        return url
 
     def __str__(self):
         return self.name
@@ -62,6 +69,21 @@ class Order(models.Model):
         blank=False,
     )
 
+    @property
+    def get_cart_total(self):
+        order_items = self.orderitem_set.all()
+        total = sum([item.get_total for item in order_items])
+        return total
+
+    @property
+    def get_cart_items(self):
+        order_items = self.orderitem_set.all()
+        total = sum([item.quantity for item in order_items])
+        return total
+
+    def __str__(self):
+        return str(self.id)
+
 
 class OrderItem(models.Model):
     product = models.ForeignKey(
@@ -85,8 +107,13 @@ class OrderItem(models.Model):
         auto_now_add=True
     )
 
-class ShippingAddress(models.Model):
+    @property
+    def get_total(self):
+        total = self.product.price * self.quantity
+        return total
 
+
+class ShippingAddress(models.Model):
     customer = models.ForeignKey(
         Customer,
         on_delete=models.SET_NULL,
