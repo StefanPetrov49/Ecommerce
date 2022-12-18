@@ -11,13 +11,13 @@ class Customer(models.Model):
     )
     name = models.CharField(
         max_length=200,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
     )
     email = models.EmailField(
         unique=True,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
     )
 
     def __str__(self):

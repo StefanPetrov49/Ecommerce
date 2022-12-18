@@ -1,10 +1,13 @@
 import json
 
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from Web_Application.web.forms import CreateUserForm
+from Web_Application.web.decorators import admin_only
+from Web_Application.web.forms import CreateUserForm, EditCustomerForm, DeleteCustomerForm, CreateCustomerForm, \
+    CreateShippingAddress
 from Web_Application.web.models import Product, Order, OrderItem
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
@@ -77,10 +80,22 @@ def checkout(request):
             'get_cart_items': 0
         }
         cart_items = order['get_cart_items']
+    customer_form = CreateCustomerForm()
+    if request.method == 'POST':
+        customer_form = CreateCustomerForm(request.POST)
+        if customer_form.is_valid():
+            customer_form.save()
+    shipping_form = CreateShippingAddress()
+    if request.method == 'POST':
+        shipping_form = CreateShippingAddress(request.POST)
+        if shipping_form.is_valid():
+            shipping_form.save()
     context = {
         'items': items,
         'order': order,
         'cart_items': cart_items,
+        'customer_form': customer_form,
+        'shipping_form': shipping_form,
     }
     return render(request, 'checkout.html', context)
 
@@ -161,3 +176,40 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login view')
+
+
+def edit_profile(request):
+    customer = request.user.customer
+    if request.method == 'GET':
+        form = EditCustomerForm(instance=customer)
+    else:
+        form = EditCustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('details profile')
+
+    context = {
+        'form': form,
+
+    }
+    return render(request, 'edit-profile.html', context)
+
+
+def delete_profile(request):
+    customer = request.user
+    if request.method == 'POST':
+        customer.delete()
+        return redirect('login view')
+
+    form = DeleteCustomerForm(instance=customer)
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'delete-profile.html', context)
+
+
+@admin_only
+def private_view(request):
+    pass

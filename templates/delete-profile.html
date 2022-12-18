@@ -60,21 +60,21 @@
         </div>
     </div>
 </nav>
-<div class="container">
-    <section id="game-details">
-        <h1>Profile Details</h1>
-        <div class="info-section">
-            <div class="game-header">
-                <p class="text">Username: {{ customer.user }}</p>
-                <p class="text">Email: {{ customer.email }}</p>
-                <div class="buttons">
-                    <a href="{% url 'edit profile' %}" class="button">Edit</a>
-                    <a href="{% url 'delete profile' %}" class="button">Delete</a>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
+
+<section id="create-page" class="auth">
+
+    <div class="container">
+        <h1>Are you sure you want to delete your profile?</h1>
+        <!-- Delete Profile Form -->
+        <form id='delete' method="post">
+            {{ form }}
+            {% csrf_token %}
+            <!-- Confirm Button -->
+            <input class="btn submit" type="submit" value="Delete">
+        </form>
+    </div>
+    <!-- End Delete Profile Form -->
+</section>
 
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
